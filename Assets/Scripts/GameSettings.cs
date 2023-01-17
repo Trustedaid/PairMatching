@@ -81,4 +81,9 @@ public class GameSettings : MonoBehaviour
         _gameSettings.PuzzleCategory = EPuzzleCategories.NotSet;
         _gameSettings.PairsNumber = EPairNumber.NotSet;
     }
+
+    public bool AllSettingsReady()
+    {
+        return _settings == SettingNumber;
+    }
 }
