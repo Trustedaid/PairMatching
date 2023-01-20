@@ -28,14 +28,14 @@ public class SetGameButton : MonoBehaviour
 
         switch (comp.ButtonType)
         {
-           
+
             case EButtonType.PairNumberBtn:
                 GameSettings.Instance.SetPairNumber(comp.PairNumber);
                 break;
             case EButtonType.PuzzleCategoryBtn:
                 GameSettings.Instance.SetPuzzleCategories(comp.PuzzleCategories);
                 break;
-            
+
         }
         if (GameSettings.Instance.AllSettingsReady())
         {

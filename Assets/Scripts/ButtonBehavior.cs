@@ -11,9 +11,4 @@ public class ButtonBehavior : MonoBehaviour
         SceneManager.LoadScene(scene_name);
     }
 
-
-  
-    
-
-
 }
