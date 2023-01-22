@@ -51,6 +51,8 @@ public class PictureManager : MonoBehaviour
     private int _firstRevealedPic;
     private int _secondRevealedPic;
     private int _revealedPicNumber = 0;
+    private int _picToDestroy1;
+    private int _picToDestroy2;
 
     void Start()
     {
@@ -104,14 +106,34 @@ public class PictureManager : MonoBehaviour
         }
         if (_revealedPicNumber == 2)
         {
+            if (PictureList[_firstRevealedPic].GetIndex() == PictureList[_secondRevealedPic].GetIndex() && _firstRevealedPic != _secondRevealedPic)
+            {
+                CurrentGameState = GameState.DeletingPuzzles;
+                _picToDestroy1 = _firstRevealedPic;
+                _picToDestroy2 = _secondRevealedPic;
+
+            }
+            else
+            {
             CurrentGameState = GameState.FlipBack;
+            }
         }
         CurrentPuzzleState = PictureManager.PuzzleState.CanRotate;
 
-        if(CurrentGameState == GameState.Checking)
+        if (CurrentGameState == GameState.Checking)
         {
             CurrentGameState = GameState.NoAction;
         }
+    }
+    private void DestroyPicture()
+    {
+        PuzzleRevealedNumber = RevealedState.Norevealed;
+        System.Threading.Thread.Sleep(300); // 350 ms delay before the ...
+        PictureList[_picToDestroy1].Deactivate();
+        PictureList[_picToDestroy2].Deactivate();
+        _revealedPicNumber = 0;
+        CurrentGameState = GameState.NoAction;
+        CurrentPuzzleState = PuzzleState.CanRotate;
     }
 
     private void FlipBack()
@@ -150,9 +172,16 @@ public class PictureManager : MonoBehaviour
     }
     void Update()
     {
-        if(CurrentGameState == GameState.FlipBack)
+        if (CurrentGameState == GameState.DeletingPuzzles)
         {
-            if(CurrentPuzzleState == PuzzleState.CanRotate)
+            if (CurrentPuzzleState == PuzzleState.CanRotate)
+            {
+                DestroyPicture();
+            }
+        }
+        if (CurrentGameState == GameState.FlipBack)
+        {
+            if (CurrentPuzzleState == PuzzleState.CanRotate)
             {
                 FlipBack();
             }
@@ -217,7 +246,8 @@ public class PictureManager : MonoBehaviour
             o.SetFirstMaterial(_firstMaterial, _firstTexturePath);
             o.ApplyFirstMaterial();
             o.SetSecondMaterial(_materialList[rndMatIndex], _texturePathList[rndMatIndex]);
-
+            o.SetIndex(rndMatIndex);
+            o.Revealed = false;
             //o.ApplySecondMaterial(); // ONLY FOR TEST
             AppliedTimes[rndMatIndex] += 1;
             forceMat = false;
