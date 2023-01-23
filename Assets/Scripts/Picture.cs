@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Picture : MonoBehaviour
 {
+    public AudioClip PressSound;
     private Material _firstMaterial;
     private Material _secondtMaterial;
 
@@ -15,6 +16,8 @@ public class Picture : MonoBehaviour
 
     private int _index;
 
+    private AudioSource _audio;
+
     public void SetIndex(int id) { _index = id; }
     public int GetIndex() { return _index; }
 
@@ -24,6 +27,8 @@ public class Picture : MonoBehaviour
         _clicked = false;
         _pictureManager = GameObject.Find("[PictureManager]").GetComponent<PictureManager>();
         _currentRotation = gameObject.transform.rotation;
+        _audio = GetComponent<AudioSource>();
+        _audio.clip = PressSound;
     }
 
     void Update()
@@ -35,8 +40,13 @@ public class Picture : MonoBehaviour
         if (_clicked == false)
         {
             _pictureManager.CurrentPuzzleState = PictureManager.PuzzleState.PuzzleRotating;
+            if(GameSettings.Instance.isSoundEffectMutedPermanently() == false)
+            {
+                _audio.Play();
+            }
             StartCoroutine(LoopRotation(45, false));
             _clicked = true;
+
 
         }
     }
@@ -47,6 +57,10 @@ public class Picture : MonoBehaviour
         {
             _pictureManager.CurrentPuzzleState = PictureManager.PuzzleState.PuzzleRotating;
             Revealed = false;
+            if (GameSettings.Instance.isSoundEffectMutedPermanently() == false)
+            {
+                _audio.Play();
+            }
             StartCoroutine(LoopRotation(45, true));
         }
     }
@@ -124,6 +138,12 @@ public class Picture : MonoBehaviour
 
     public void Deactivate()
     {
+        StartCoroutine(DeactivateCorutine());
+    }
+    private IEnumerator DeactivateCorutine()
+    {
+        Revealed = false;
+        yield return new WaitForSeconds(1f);
         gameObject.SetActive(false);
     }
 }
